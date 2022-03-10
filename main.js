@@ -1,3 +1,5 @@
+import * as api from "./apiCall"
+
 function initMap() {
     let list = [
         [{lat: 48.7950571, lng: 2.5267579}],
@@ -5,6 +7,10 @@ function initMap() {
         [{lat: 48.7913221, lng: 2.6471926}]]
 
     const center = {lat: 48.8630211, lng: 2.3579253};
+
+    let t = api.getDistance(center, 1000)
+
+    console.log(t)
 
     const map = new google.maps.Map(document.getElementById("map"), {
         zoom: 11,
