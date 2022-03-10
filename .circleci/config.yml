@@ -1,0 +1,206 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+
+parameters:
+  pull_request:
+    type: boolean
+    default: false
+  merge_or_release:
+    type: boolean
+    default: false
+  latest_release:
+    type: string
+    default: 1.0.0
+
+
+orbs:
+  security-report: dreamquark-ai/security-report@1.0.1
+
+executors:
+  security-report: dreamquark-ai/security-report@1.0.1
+
+jobs:
+  app-test:
+    docker:
+      - image: node:alpine3.15
+    working_directory: /root/project/app
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: npm install && npm run build
+      - run:
+          name: Test
+          command: npm i && npm run test
+
+  docker-app-dev:
+    docker:
+      - image: quay.io/paulbarrie7/docker:latest
+    working_directory: /root/project
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+          version: 20.10.11
+      - run:
+          name: "Build the image"
+          command: |
+            make build-app IMAGE_TAG=latest
+      - run:
+          name: "Deploy the image"
+          command: |
+            echo $QUAY_PASSWORD | docker login -u $QUAY_LOGIN --password-stdin  quay.io
+            make deploy-app APP_TAG=latest
+
+  app-security:
+    executor: security-report/default
+    working_directory: /root/project
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+          version: 20.10.11
+      - run:
+          name: "Build & pull the images for security report"
+          command: |
+            echo $QUAY_PASSWORD | docker login -u $QUAY_LOGIN --password-stdin  quay.io
+            docker pull quay.io/brumaide/app:<< pipeline.parameters.latest_release >>
+            make build-app APP_TAG=security-test
+
+      - security-report/security-report:
+          image: 'quay.io/brumaide/app'
+          base-tag: '1.0.0'
+          new-tag: 'security-test'
+          orga: 'Kaseriu'
+          repo: 'Brumaide'
+          topic: 'app-security-report'
+
+  api-test:
+    docker:
+      - image: node:alpine3.15
+    working_directory: /root/project/api
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: npm i && npm run build
+      - run:
+          name: Test
+          command:  npm run test
+
+  docker-api-dev:
+    docker:
+      - image: quay.io/paulbarrie7/docker:latest
+    working_directory: /root/project
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+          version: 20.10.11
+      - run:
+          name: "Build the image"
+          command: |
+            make build-api IMAGE_TAG=latest
+      - run:
+          name: "Deploy the image"
+          command: |
+            echo $QUAY_PASSWORD | docker login -u $QUAY_LOGIN --password-stdin  quay.io
+            make deploy-api API_TAG=latest
+
+  api-security:
+    executor: security-report/default
+    working_directory: /root/project
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+          version: 20.10.11
+      - run:
+          name: "Build & pull the images for security report"
+          command: |
+            echo $QUAY_PASSWORD | docker login -u $QUAY_LOGIN --password-stdin  quay.io
+            docker pull quay.io/brumaide/api:<< pipeline.parameters.latest_release >>
+            make build-api API_IMAGE=quay.io/brumaide/app API_TAG=security-test
+      - security-report/security-report:
+          image: 'quay.io/brumaide/api'
+          base-tag: '1.0.0'
+          new-tag: 'security-test'
+          orga: 'Kaseriu'
+          repo: 'Brumaide'
+          topic: 'api-security-report'
+
+  docker-app-prod:
+    docker:
+      - image: quay.io/paulbarrie7/docker:latest
+    working_directory: /root/project
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+          version: 20.10.11
+      - run:
+          name: "Build the image"
+          command: |
+            make build-app APP_IMAGE=quay.io/brumaide/app APP_TAG=latest
+      - run:
+          name: "Deploy the image"
+          command: |
+            echo $QUAY_PASSWORD | docker login -u $QUAY_LOGIN --password-stdin  quay.io
+            make deploy-app APP_TAG=<< pipeline.parameters.latest_release >>
+
+  docker-api-prod:
+    docker:
+      - image: quay.io/paulbarrie7/docker:latest
+    working_directory: /root/project
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+          version: 20.10.11
+      - run:
+          name: "Build the image"
+          command: |
+            make build-api API_TAG=latest
+      - run:
+          name: "Deploy the image"
+          command: |
+            echo $QUAY_PASSWORD | docker login -u $QUAY_LOGIN --password-stdin  quay.io
+            make deploy-api API_TAG=<< pipeline.parameters.latest_release >>
+
+workflows:
+  app-dev:
+    when: << pipeline.parameters.pull_request >>
+    jobs:
+      - app-test
+      - docker-app-dev:
+          context:
+            - ci-brumaire
+      - app-security:
+          context:
+            - ci-brumaire
+
+  api-dev:
+    when: << pipeline.parameters.pull_request >>
+    jobs:
+      - api-test
+      - docker-api-dev:
+          context:
+            - ci-brumaire
+      - api-security:
+          context:
+            - ci-brumaire
+
+  api-prod:
+    when: << pipeline.parameters.merge_or_release >>
+    jobs:
+      - docker-api-prod:
+          context:
+            - ci-brumaire
+  
+  app-prod:
+    when: << pipeline.parameters.merge_or_release >>
+    jobs:
+      - docker-app-prod:
+          context:
+            - ci-brumaire
