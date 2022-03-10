@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const swagger = require('swagger-ui-express');
 const swagger_json = require('./swagger/swagger.json');
+const db = require('./models/sequelize.models');
 
 const app = express();
 
