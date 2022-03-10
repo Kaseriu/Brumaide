@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import Home from './containers/Home';
-import Issue from './containers/Issue';
+import Issue from './containers/issue/Issue';
 import Chat from './containers/Chat';
 import Dashboard from './containers/Dashboard';
 
