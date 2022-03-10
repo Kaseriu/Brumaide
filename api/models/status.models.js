@@ -1,7 +1,7 @@
 const DataTypes = require('sequelize');
 
 module.exports = (sequelize) => {
-    const Status = sequelize.define('statuses', {
+    return sequelize.define('statuses', {
         name: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -16,7 +16,4 @@ module.exports = (sequelize) => {
         timestamps: false,
         freezeTableName: true
     });
-
-    Status.sync({ force: true });
-    return Status;
 };

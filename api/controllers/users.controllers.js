@@ -23,48 +23,6 @@ exports.getAllUsers = (req, res) => {
     });
 };
 
-
-exports.getAllUsersByRadius = (req, res) => {
-    const radius = req.params.radius;
-    const userId = req.params.userId;
-    User.findByPk(userId, {include: include.include}).then(data => {
-        if (!data){
-            throw new Error('User not found');
-        }
-        const latitude = data.latitude;
-        const longitude = data.longitude;
-        console.log("long+lat", latitude, longitude);
-        const bounds = geolib.getBoundsOfDistance({
-            latitude: latitude,
-            longitude: longitude
-        }, radius);
-        console.log("bounds", bounds[0].latitude, bounds[1].latitude);
-        User.findAll({
-            include: include.include,
-            where: {
-                latitude: {
-                    [Op.in]: [bounds[0].latitude, bounds[1].latitude]
-                },
-                longitude: {
-                    [Op.in]: [bounds[0].longitude, bounds[1].longitude]
-                }
-            }
-        }).then(users => {
-            res.send(users);
-        }).catch(error => {
-            res.status(500).send({
-                message: error.message || "Some error occurred while retrieving users."
-            });
-        });
-    }).catch(err => {
-        res.status(500).send({
-            message: err.message || "Some error occurred while retrieving users."
-        });
-    });
-};
-
-
-
 exports.insertUser = (req, res) => {
     const user = {
         username: req.body.username,

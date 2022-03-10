@@ -13,7 +13,7 @@ app.use("/swagger", swagger.serve, swagger.setup(swagger_json));
 
 const port = process.env.API_PORT || 8080;
 
-db.sequelize.sync({ force: true });
+//db.sequelize.sync({ force: true });
 
 
 

@@ -1,8 +1,10 @@
 const db = require('../models/sequelize.models');
-
+const geolib = require('geolib');
+const { MAXLAT } = require('geolib');
 const Issue = db.issues;
 const Status = db.status;
 const Roles = db.roles;
+const User = db.users;
 const Op = db.Sequelize.Op;
 
 
@@ -57,6 +59,43 @@ exports.getAllIssues = (req, res) => {
         });
     });
 };
+
+
+exports.getIssueByUserByRadius = async (req, res) => {
+    const radius = req.params.radius;
+    const userId = req.params.userId;
+    
+    const user = await User.findByPk(userId);
+    const userLatitude = user.latitude;
+    const userLongitude = user.longitude;
+
+    const bounds = geolib.getBoundsOfDistance({
+        latitude: userLatitude,
+        longitude: userLongitude
+    }, radius);
+
+    const minimumLatitude = bounds[0].latitude;
+    const maximumLatitude = bounds[1].latitude;
+    const minimumLongitude = bounds[0].longitude;
+    const maximumLongitude = bounds[1].longitude;
+
+
+    const issues = await Issue.findAll({
+        logging: console.log,
+        include: include.include,
+        where: {
+            '$user.latitude$': {
+                [Op.between]: [minimumLatitude, maximumLatitude],
+            },
+            '$user.longitude$': {
+                [Op.between]: [minimumLongitude, maximumLongitude],
+            },
+        }
+    });
+
+    res.send(issues);
+};
+
 
 exports.getIssuesByUser = (req, res) => {
 
