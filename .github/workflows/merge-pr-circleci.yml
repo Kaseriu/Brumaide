@@ -1,0 +1,20 @@
+on:
+  push:
+    branches:
+      - master
+  
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger CircleCI
+        env:
+          CIRCLE_BRANCH: ${{ github.head_ref }}
+          CIRCLE_TOKEN: ${{ secrets.CIRCLE_TOKEN }}
+        run: |
+          curl -X POST \
+          -H "Circle-Token: ${CIRCLE_TOKEN}" \
+          -H 'Content-Type: application/json' \
+          -H 'Accept: application/json' \
+          -d "{\"branch\":\"${CIRCLE_BRANCH}\",\"parameters\":{\"merge_or_release:  \":true}}" \
+          "https://circleci.com/api/v2/project/github/Kaseriu/Brumaide/pipeline"
