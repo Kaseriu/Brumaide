@@ -26,12 +26,14 @@ exports.findAll = (req, res) => {
 };
 
 exports.insertOneMessage = (req, res) => {
+    console.log(req.body);
     const message = {
         senderId: req.body.senderId,
         receiverId: req.body.receiverId,
         message: req.body.message,
-        createdAt: req.body.createdAt
     };
+
+    message.createdAt = Date.now();
 
     Message.create(message).then(data => {
         res.send(data);

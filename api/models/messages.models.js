@@ -1,7 +1,7 @@
 const DataTypes = require('sequelize');
 
 module.exports = (sequelize) => {
-    const Message = sequelize.define('messages', {
+    return sequelize.define('messages', {
         message: {
             type: DataTypes.STRING,
             allowNull: false
@@ -23,6 +23,4 @@ module.exports = (sequelize) => {
         timestamps: false,
         freezeTableName: true
     });
-    //Message.sync({ force: true });
-    return Message;
 }

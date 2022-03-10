@@ -55,13 +55,16 @@ module.exports = (sequelize) => {
         roleId: {
             type: DataTypes.INTEGER,
             allowNull: false
+        },
+        birthday: {
+            type: DataTypes.DATE,
+            allowNull: false
         }
     }, {
         tableName: 'users',
         timestamps: false,
         freezeTableName: true
     });
-    //User.sync({ force: true });
 
     User.prototype.toJSON = function() {
         var values = Object.assign({}, this.get());

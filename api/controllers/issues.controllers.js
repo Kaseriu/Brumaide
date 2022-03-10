@@ -64,8 +64,13 @@ exports.getAllIssues = (req, res) => {
 exports.getIssueByUserByRadius = async (req, res) => {
     const radius = req.params.radius;
     const userId = req.params.userId;
-    
     const user = await User.findByPk(userId);
+
+    if (!user) {
+        return res.status(400).send({
+            message: "User not found"
+        });
+    }
     const userLatitude = user.latitude;
     const userLongitude = user.longitude;
 
@@ -79,8 +84,7 @@ exports.getIssueByUserByRadius = async (req, res) => {
     const minimumLongitude = bounds[0].longitude;
     const maximumLongitude = bounds[1].longitude;
 
-
-    const issues = await Issue.findAll({
+    let issues = await Issue.findAll({
         logging: console.log,
         include: include.include,
         where: {
@@ -90,10 +94,31 @@ exports.getIssueByUserByRadius = async (req, res) => {
             '$user.longitude$': {
                 [Op.between]: [minimumLongitude, maximumLongitude],
             },
+            '$user.id$': {
+                [Op.ne]: userId
+            }
         }
     });
+    const from = {
+        latitude: user.latitude,
+        longitude: user.longitude
+    }
+    let newIssues = [];
+    for (const issue of issues) {
+        const to = {
+            latitude: issue.user.latitude,
+            longitude: issue.user.longitude
+        }
+        const distance = geolib.getDistance(from, to);
+        const d = distance >= 1000 ? (distance / 1000).toFixed(2) + ' km' : distance + ' m';
+        issue.distance = d;
+        newIssues.push({
+            ...issue.dataValues,
+            distance: d
+        })
+    }
 
-    res.send(issues);
+    res.send(newIssues);
 };
 
 
