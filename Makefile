@@ -4,11 +4,11 @@ export $(shell sed 's/=.*//' .env)
 
 all: up migrations
 
-restart: 
+restart:
 ifdef svc
 	docker-compose  stop $(svc) && docker-compose  up --build -d $(svc)
 else
-	docker-compose restart 
+	docker-compose restart
 endif
 .PHONY: restart
 
@@ -21,7 +21,7 @@ ifdef svc
 	docker-compose logs -f $(svc)
 else
 	docker-compose logs -f
-endif	
+endif
 .PHONY: logs
 
 up:
