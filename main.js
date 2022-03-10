@@ -1,6 +1,9 @@
-import * as api from "./apiCall"
+// const axios = require("axios")
+// import * from 'axios.js'
 
-function initMap() {
+// const geolib = require("geolib");
+
+async function initMap() {
     let list = [
         [{lat: 48.7950571, lng: 2.5267579}],
         [{lat: 48.7845353, lng: 2.4173084}],
@@ -8,9 +11,7 @@ function initMap() {
 
     const center = {lat: 48.8630211, lng: 2.3579253};
 
-    let t = api.getDistance(center, 1000)
-
-    console.log(t)
+    let issuesSorted = await getIssuesSorted(center, 1000)
 
     const map = new google.maps.Map(document.getElementById("map"), {
         zoom: 11,
@@ -23,11 +24,20 @@ function initMap() {
     });
 
     for (let i = 0; i < list.length; i++) {
-        new google.maps.Marker({
-            position: list[i][0],
+        let marker = new google.maps.Marker({
+            position: {lat : issuesSorted[i].user.latitude, lng : issuesSorted[i].user.longitude},
             label: (i + 1).toString(),
+            title: "Titre : " + (i + 1),
             map: map
         });
+
+        const infoWindow = new google.maps.InfoWindow();
+
+        marker.addListener("click", () => {
+            infoWindow.close()
+            infoWindow.setContent(marker.getTitle());
+            infoWindow.open(marker.getMap(), marker);
+        })
     }
 
     new google.maps.Circle({
@@ -40,6 +50,31 @@ function initMap() {
         center: center,
         radius: 10000,
     });
+}
+
+async function getIssuesSorted(from, radius) {
+
+    try {
+        let me = await fetch("http://10.33.5.57:3001/api/v1/me", {
+            method: 'GET',
+            headers: {"Content-Type": "application/json"},
+        }).then(response => response.json())
+
+        let response = await fetch("http://10.33.5.57:3001/api/v1/issues/" + me.id + "/" + radius, {
+            method: 'GET',
+            headers: {"Content-Type": "application/json"},
+        }).then(response => response.json())
+
+        console.log(response)
+
+    } catch
+        (e) {
+        console.error(e)
+    }
+
+    return response.sort((a, b) => {
+        return a.distance < b.distance ? -1 : a.distance > b.distance ? 1 : 0
+    })
 }
 
 
