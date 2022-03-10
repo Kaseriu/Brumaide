@@ -1,50 +1,6 @@
 
 version: "3.5"
-services:
-  proxy:
-    image: traefik:v2.3
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    networks:
-      - proxy
-    container_name: ${PROXY_CONTAINER}
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      # - ./docker/traefik/config/traefik.toml:/traefik.toml
-    command:
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --providers.docker=true
-      - --providers.file.directory=/etc/traefik/dynamic_conf
-    labels:
-      - traefik.enable=true
-      - providers.docker=true
-      - traefik.http.routers.traefik=true
-      # - entryPoints.web.address=:80
-      # - providers.providersThrottleDuration=2s
-      # - providers.docker.watch=true
-      # - providers.docker.swarmMode=true
-      # - providers.docker.swarmModeRefreshSeconds=15s
-      # - providers.docker.exposedbydefault=false
-      # - traefik.frontend.rule=Host("proxy.${BASE_DOMAIN}")
-
-      # - traefik.frontend.entryPoints=http,https
-      # - traefik.backend=${PROXY_CONTAINER}
-      # - traefik.port=8080
-      # - log.filePath=traefik.log
-      # - log.format=json
-      # - log.level="DEBUG"
-      # - entryPoints.websecure.address=:443
-      # Traefik for HTTP
-      - traefik.http.routers.proxy.entryPoints=insecure
-      - traefik.http.routers.proxy.rule=Host(`proxy.${BASE_DOMAIN}`)
-      # Traefik middleware for redirection
-  
+services:  
   app:
     build:
       context: app
@@ -64,10 +20,6 @@ services:
       - ./app:/home/app
       - /home/app/node_modules
     container_name: ${APP_CONTAINER}
-    labels:
-      - traefik.enable=true
-      - traefik.tags=public 
-      - traefik.http.routers.api.rule=Host(`app.${BASE_DOMAIN}`)
 
   api:
     build:
@@ -93,11 +45,7 @@ services:
       - ./api:/home/api
       - /home/api/node_modules
     container_name: ${API_CONTAINER}
-    labels:
-      - traefik.enable=true
-      - traefik.tags=public
-      - traefik.http.routers.api.rule=Host(`api.${BASE_DOMAIN}`)
-  
+
   pgsql:
     image: postgres:13.6
     restart: on-failure
@@ -110,10 +58,6 @@ services:
       - proxy
     ports:
       - ${PG_PORT}
-    labels:
-      - traefik.enable=true
-      - traefik.tags=public
-      - traefik.http.routers.pgsql.rule=Host(`pgsql.${BASE_DOMAIN}`)
 
 
 networks: 
