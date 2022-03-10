@@ -20,7 +20,11 @@ function Home() {
             </li>
           </ul>
         </nav>
+
+        
     )
 }
+
+
 
 export default withRouter(Home);
