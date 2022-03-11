@@ -1,5 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
+<<<<<<< HEAD
+=======
 import Home from './containers/Home';
 import Issue from './containers/Issue';
 import Chat from './containers/Chat';
@@ -11,6 +13,7 @@ import {
   Route
 } from "react-router-dom";
 
+>>>>>>> master
 
 function App() {
   return (

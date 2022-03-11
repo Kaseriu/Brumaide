@@ -45,7 +45,6 @@ services:
       - ./api:/home/api
       - /home/api/node_modules
     container_name: ${API_CONTAINER}
-
   pgsql:
     image: postgres:13.6
     restart: on-failure
