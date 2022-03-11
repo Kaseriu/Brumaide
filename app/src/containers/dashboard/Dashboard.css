@@ -66,15 +66,13 @@ p2 {
     float: left;
     display: flex;
 }
-
-.map {
-    height: 100vh;
-    overflow: auto;
-    border-radius: 10px;
-    float: right;
+#map{   
+    position: relative; 
     display: flex;
+    top:6px;     
+    height: 100vh;
+    z-index: 2000;
 }
-
 
 .item {
     margin-top: 5%;
