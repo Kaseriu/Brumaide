@@ -1,5 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
+import Issue from './containers/issue/Issue';
+import Chat from './containers/Chat';
+import Dashboard from './containers/Dashboard';
 import Home from './containers/home/Home';
 import Issue from './containers/Issue';
 import Chat from './containers/chat/Chat';
