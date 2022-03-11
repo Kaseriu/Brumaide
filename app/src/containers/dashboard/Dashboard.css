@@ -1,0 +1,133 @@
+body {
+    background-color: rgb(7, 63, 119);
+}
+
+input {
+    width: 520px;
+    margin-top: 20px;
+    height: 40px;
+}
+/*
+
+
+.title {
+    background-color: white;
+}
+
+.item {
+    background-color: aqua;
+    margin-top: 10px;
+}
+
+.tag {
+    float:left; 
+    background:Red;
+    width:25%;
+    height:280px;
+}
+
+.position {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    border: solid;
+}
+
+.description-tag {
+    float:left; 
+    background:Green;
+    width:50%;
+    height:280px;
+}
+
+p1 {
+    text-align: left;
+    font-weight: bolder;
+    font-size: 30px;
+}
+
+p2 {
+    font-size: 10px;
+} */
+
+* {margin: 0; padding: 0;}
+
+.overall {
+    margin-top: 5%;
+}
+
+.issue {
+    margin-left: 20px;
+    width: 30%;
+    height: 100vh;
+    background-color: white;
+    overflow: auto;
+    border-radius: 10px;
+    float: left;
+    display: flex;
+}
+
+.map {
+    height: 100vh;
+    overflow: auto;
+    border-radius: 10px;
+    float: right;
+    display: flex;
+}
+
+
+.item {
+    margin-top: 5%;
+}
+
+.position {
+    float: left;
+    margin: auto;
+    width: 20%;
+    height: 100%;
+    display:flex;
+    align-items:center;
+    margin-top: 6%;
+}
+
+.description-tag {
+    float: right;
+    margin: auto;
+    width: 80%;
+}
+
+ul {
+  list-style-type: none;
+  width: 90%;
+  margin: 0 auto;
+}
+
+h3 {
+  font: bold 20px/1.5 Helvetica, Verdana, sans-serif;
+}
+
+li img {
+  float: left;
+  margin: 0 15px 0 0;
+}
+
+li p {
+  font: 200 12px/1.5 Georgia, Times New Roman, serif;
+}
+
+li {
+  padding: 10px;
+  overflow: auto;
+}
+
+li:hover {
+  background: #eee;
+  cursor: pointer;
+}
+
+iframe{
+    border: 1px;
+    height: 100vh;
+    width: 50%;
+}
+
