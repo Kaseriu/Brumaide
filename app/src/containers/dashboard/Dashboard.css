@@ -52,13 +52,29 @@ p2 {
 
 * {margin: 0; padding: 0;}
 
+.overall {
+    margin-top: 5%;
+}
+
 .issue {
-    margin: 20px;
+    margin-left: 20px;
     width: 30%;
     height: 100vh;
     background-color: white;
     overflow: auto;
+    border-radius: 10px;
+    float: left;
+    display: flex;
 }
+
+.map {
+    height: 100vh;
+    overflow: auto;
+    border-radius: 10px;
+    float: right;
+    display: flex;
+}
+
 
 .item {
     margin-top: 5%;
@@ -114,3 +130,4 @@ iframe{
     height: 100vh;
     width: 50%;
 }
+
