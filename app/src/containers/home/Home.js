@@ -1,30 +1,32 @@
-import React from "react";
 import {withRouter} from 'react-router';
 import {Link} from 'react-router-dom';
+import React, { Component } from 'react';
+import { Map, GoogleApiWrapper } from 'google-maps-react';
 
-function Home() {
+
+const mapStyles = {
+  width: '100%',
+  height: '100%'
+};
+
+export class Home extends Component {
+  render() {
     return (
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/issue">Issue</Link>
-            </li>
-            <li>
-              <Link to="/chat">Chat</Link>
-            </li>
-            <li>
-              <Link to="/dashboard">Dashboard</Link>
-            </li>
-          </ul>
-        </nav>
-
-        
-    )
+      <Map
+        google={this.props.google}
+        zoom={14}
+        style={mapStyles}
+        initialCenter={
+          {
+            lat: -1.2884,
+            lng: 36.8233
+          }
+        }
+      />
+    );
+  }
 }
 
-
-
-export default withRouter(Home);
+export default withRouter(GoogleApiWrapper({
+  apiKey: 'AIzaSyDJCMUAVJb_dPak918P_0Bc2h2OEdTJ2nc'
+})(Home));
