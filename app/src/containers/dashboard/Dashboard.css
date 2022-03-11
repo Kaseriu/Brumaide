@@ -1,6 +1,12 @@
 body {
     background-color: rgb(7, 63, 119);
 }
+
+input {
+    width: 520px;
+    margin-top: 20px;
+    height: 40px;
+}
 /*
 
 
@@ -65,6 +71,7 @@ p2 {
     height: 100%;
     display:flex;
     align-items:center;
+    margin-top: 6%;
 }
 
 .description-tag {
